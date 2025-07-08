@@ -1,6 +1,6 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useMemo, type ReactElement } from 'react';
+import { useMemo, useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItem from './AppLogsItem';
@@ -25,6 +25,10 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 
 	const debouncedEvent = useDebouncedValue(event, 500);
 
+	const [expandOverride, setExpandOverride] = useState(false);
+	
+	const expandAll = () => setExpandOverride(true);
+	
 	const { data, isSuccess, isError, isFetching, error } = useLogs({
 		appId: id,
 		current,
@@ -50,7 +54,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 	return (
 		<>
 			<Box pb={16}>
-				<AppLogsFilter />
+				<AppLogsFilter expandAll={expandAll} />
 			</Box>
 			{isFetching && <AccordionLoading />}
 			{isError && <GenericError title={parsedError} />}
@@ -59,7 +63,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 			) : (
 				<CustomScrollbars>
 					<CollapsiblePanel aria-busy={isFetching || event !== debouncedEvent} width='100%' alignSelf='center'>
-						{data?.logs?.map((log, index) => <AppLogsItem regionId={log._id} key={`${index}-${log._createdAt}`} {...log} />)}
+						{data?.logs?.map((log, index) => <AppLogsItem setExpandOverride={setExpandOverride} regionId={log._id} key={`${index}-${log._createdAt}`} {...log} />)}
 					</CollapsiblePanel>
 				</CustomScrollbars>
 			)}
