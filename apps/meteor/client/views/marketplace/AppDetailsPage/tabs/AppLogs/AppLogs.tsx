@@ -28,8 +28,8 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 	const [expandOverride, setExpandOverride] = useState(false);
 	
 	const expandAll = () => setExpandOverride(true);
-	
-	const { data, isSuccess, isError, isFetching, error } = useLogs({
+
+	const { data, isSuccess, isError, error, refetch, isFetching } = useLogs({
 		appId: id,
 		current,
 		itemsPerPage,
@@ -54,7 +54,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 	return (
 		<>
 			<Box pb={16}>
-				<AppLogsFilter expandAll={expandAll} />
+				<AppLogsFilter expandAll={expandAll} refetchLogs={() => refetch()} isLoading={isFetching} />
 			</Box>
 			{isFetching && <AccordionLoading />}
 			{isError && <GenericError title={parsedError} />}
@@ -63,7 +63,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 			) : (
 				<CustomScrollbars>
 					<CollapsiblePanel aria-busy={isFetching || event !== debouncedEvent} width='100%' alignSelf='center'>
-						{data?.logs?.map((log, index) => <AppLogsItem setExpandOverride={setExpandOverride} regionId={log._id} key={`${index}-${log._createdAt}`} {...log} />)}
+						{data?.logs?.map((log, index) => <AppLogsItem expandOverride={expandOverride} setExpandOverride={setExpandOverride} regionId={log._id} key={`${index}-${log._createdAt}`} {...log} />)}
 					</CollapsiblePanel>
 				</CustomScrollbars>
 			)}
