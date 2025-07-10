@@ -58,9 +58,8 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 			</Box>
 			{isFetching && <AccordionLoading />}
 			{isError && <GenericError title={parsedError} />}
-			{isSuccess && data?.logs?.length === 0 ? (
-				<GenericNoResults />
-			) : (
+			{!isFetching && isSuccess && data?.logs?.length === 0 && <GenericNoResults />}
+			{!isFetching && isSuccess && data?.logs?.length > 0 && (
 				<CustomScrollbars>
 					<CollapsiblePanel aria-busy={isFetching || event !== debouncedEvent} width='100%' alignSelf='center'>
 						{data?.logs?.map((log, index) => <AppLogsItem expandOverride={expandOverride} setExpandOverride={setExpandOverride} regionId={log._id} key={`${index}-${log._createdAt}`} {...log} />)}
